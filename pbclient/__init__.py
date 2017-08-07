@@ -36,24 +36,26 @@ def _pybossa_req(method, domain, id=None, payload=None, params={},
     code of the response.
     """
     url = _opts['endpoint'] + '/api/' + domain
+    timeout = _opts.get('timeout')
     if id is not None:
         url += '/' + str(id)
     if 'api_key' in _opts:
         params['api_key'] = _opts['api_key']
     if method == 'get':
-        r = requests.get(url, params=params)
+        r = requests.get(url, params=params, timeout=timeout)
     elif method == 'post':
         if files is None and headers['content-type'] == 'application/json':
             r = requests.post(url, params=params, headers=headers,
-                              data=json.dumps(payload))
+                              data=json.dumps(payload), timeout=timeout)
         else:
-            r = requests.post(url, params=params, files=files, data=payload)
+            r = requests.post(url, params=params, files=files, data=payload,
+                              timeout=timeout)
     elif method == 'put':
         r = requests.put(url, params=params, headers=headers,
-                         data=json.dumps(payload))
+                         data=json.dumps(payload), timeout=timeout)
     elif method == 'delete':
         r = requests.delete(url, params=params, headers=headers,
-                            data=json.dumps(payload))
+                            data=json.dumps(payload), timeout=timeout)
     if r.status_code / 100 == 2:
         if r.text and r.text != '""':
             return json.loads(r.text)
